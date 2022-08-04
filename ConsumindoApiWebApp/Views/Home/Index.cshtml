@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+<button type="button" id="login">Login</button>
+<button type="button" id="logout">Logout</button>
+<button type="button" id="showData">Exibir Dados</button>
+<div id="response"></div>
+
+<script>
+    $(document).ready(function () {
+        $("#login").click(function () { });
+        $("#showData").click(function () { });
+        $("#logout").click(function () { });
+    });
+    $("#login").click(function () {
+        var options = {};
+        options.url = "/api/token";
+        options.type = "POST";
+        var obj = {};
+        obj.nome = "Relinton Pinheiro Franco";
+        obj.email = "relintonproande@gmail.com";
+        obj.login = "relintonproande@gmail.com";
+        obj.senha = "31457831";
+        options.data = JSON.stringify(obj);
+        options.contentType = "application/json";
+        options.dataType = "json";
+        options.success = function (obj) {
+            sessionStorage.setItem("token", obj.token);
+            $("#response").html("<h2>Usuário logado com sucesso.</h2>");
+        };
+        options.error = function () {
+            $("#response").html("<h1>Erro ao chamar a Web API!</h1>");
+        };
+        $.ajax(options);
+    });
+    $("#exibirDados").click(function () {
+        var options = {};
+        options.url = "/api/produtos/todos";
+        options.type = "GET";
+        options.beforeSend = function (request) {
+            request.setRequestHeader("Authorization",
+                "Bearer " + sessionStorage.getItem("token"));
+        };
+        options.dataType = "json";
+        options.success = function (data) {
+            var table = "<table border='1' cellpadding='10'>";
+            data.forEach(function (element) {
+                var row = "<tr>";
+                row += "<td>";
+                row += element.Id;
+                row += "</td>";
+                row += "<td>";
+                row += element.nome;
+                row += "</td>";
+                row += "</tr>";
+                table += row;
+            });
+            table += "</table>";
+            $("#response").append(table);
+        };
+        options.error = function (a, b, c) {
+            $("#response").html("<h1>Erro a chamar a Web API!(" + b + " - " + c + ")</h1>");
+        };
+        $.ajax(options);
+    });
+
+    $("#logout").click(function () {
+        sessionStorage.removeItem("token");
+        $("#response").html("<h2>Usuário realizou o logout com sucesso.</h2 >");
+    });
+</script>

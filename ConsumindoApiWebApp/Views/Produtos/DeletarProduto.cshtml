@@ -1,0 +1,10 @@
+﻿@model Produto
+@{
+    ViewData["Title"] = "DeletarProduto";
+}
+
+<form asp-action="DeletarProduto" method="post">
+    <input type="hidden" value="@Model.Id" name="ProdutoId" />
+    <input type="image" src="/icon/close.png" />
+</form>
+
